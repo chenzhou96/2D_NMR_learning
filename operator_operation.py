@@ -23,6 +23,7 @@ class Vector():
         self.coefficient = coefficient
         self.coefficient_list = coefficient_list
 
+    # 待补充 增加相同Coefficient.trig, Coefficient.argu情况下Coefficient.index的合并
     def str_to_list(self) -> None:
         """
         将Vector.coefficient转换为Vector.coefficient_list
@@ -82,7 +83,7 @@ class Vector():
 
         return None
 
-def _read_table(path: str) -> pd.DataFrame:
+def read_table(path: str) -> pd.DataFrame:
     """
     读入算符运算表 保存在DataFrame格式表格中
     """
@@ -91,14 +92,14 @@ def _read_table(path: str) -> pd.DataFrame:
 
     return data.set_index('vector')
 
-def _well_behaved_vector(table: pd.DataFrame) -> set:
+def well_behaved_vector(table: pd.DataFrame) -> set:
     """
     根据算符表 输出合格向量
     """
 
     return set(table.index) | set(table.columns)
 
-def _operator_calculate(mm_vector: Vector, operator: Vector, table: pd.DataFrame) -> list:
+def operator_calculate(mm_vector: Vector, operator: Vector, table: pd.DataFrame) -> list:
     """
     输入起始向量,变换算符,和算符运算表 返回计算后的算符列表
     """
@@ -120,7 +121,7 @@ def _operator_calculate(mm_vector: Vector, operator: Vector, table: pd.DataFrame
         return [mm_vector_1,]
     return [mm_vector_1, mm_vector_2]
 
-def _vector_calculate(mm_vectors: list, operators: list, table: pd.DataFrame) -> list:
+def vector_calculate(mm_vectors: list, operators: list, table: pd.DataFrame) -> list:
     """
     输入变换前宏观磁化矢量组,变换算符,和算符运算表 返回变换后宏观磁化矢量组
     """
@@ -129,13 +130,13 @@ def _vector_calculate(mm_vectors: list, operators: list, table: pd.DataFrame) ->
 
         new_mm_vectors = list()
         for mm_vector in mm_vectors:
-            new_mm_vectors.extend(_operator_calculate(mm_vector, operator, table))
+            new_mm_vectors.extend(operator_calculate(mm_vector, operator, table))
 
         mm_vectors = new_mm_vectors
     
     return mm_vectors
 
-def _simplify_results(mm_vectors: list) -> list:
+def simplify_results(mm_vectors: list) -> list:
     """
     输入宏观磁化矢量组 返回简化后的结果
     """
@@ -147,47 +148,4 @@ def _simplify_results(mm_vectors: list) -> list:
 
 if __name__ == '__main__':
 
-    PATH = 'D:\\CS\\NMR\\operator_operation_table.csv'
-    WELL_BEHAVED_VECTORS = {'Ix', 'Iy', 'Sx', 'Sy'}
-    MM_VECTORS = [Vector('Iz'),]
-    # MM_VECTORS = [Vector('Iy', False, 'cos(πJt1)'),]
-    OPERATORS = [
-        Vector('Ix', coefficient='90'),
-        Vector('Sx', coefficient='90'),
-        Vector('Iz', coefficient='2πδIt1'),
-        Vector('Sz', coefficient='2πδst1'),
-        Vector('IzSz', coefficient='πJt1'),
-        Vector('Ix', coefficient='180'),
-        Vector('Sx', coefficient='180'),
-        Vector('Iz', coefficient='2πδIt2'),
-        Vector('Sz', coefficient='2πδst2'),
-        Vector('IzSz', coefficient='πJt2'),
-        # Vector('Iz', coefficient='2πδIt2'),
-        # Vector('Sz', coefficient='2πδIt2'),
-        # Vector('IzSz', coefficient='πJt2'),
-    ]
-
-    table = _read_table(PATH)
-    for operator in OPERATORS:
-        if operator.vector not in _well_behaved_vector(table):
-            print('\n输入非法算符, 请检查\n')
-            exit()
-
-    results = _vector_calculate(MM_VECTORS, OPERATORS, table)
-    detected_vectors = list()
-    for result in results:
-        # if result.vector in WELL_BEHAVED_VECTORS:
-        if True:
-            # result = _simplify_result(result)
-            if result.symbol:
-                detected_vectors.append(f'+{result.coefficient}{result.vector}')
-            else:
-                detected_vectors.append(f'-{result.coefficient}{result.vector}')
-
-    if detected_vectors:
-        print('\n可检测磁化矢量:')
-        for detected_vector in detected_vectors:
-            print(detected_vector)
-        print('')
-    else:
-        print('\n无可检测磁化矢量\n')
+    pass
