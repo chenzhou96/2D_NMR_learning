@@ -28,18 +28,22 @@ class Vector():
         将Vector.coefficient转换为Vector.coefficient_list
         """
 
+        # 保证Vector.coefficient和Vector.coefficient_list必有一个为空
         if self.coefficient_list:
             print('\n数据报错\n')
             exit()
 
         coefficients = self.coefficient.split(',')
 
-        trig_list = list()
+        trig_list = list() # 中间列表 存储Coefficient类的三角函数
         for coefficient in coefficients:
             if coefficient:
-                trig, argu = coefficient.split('(') # 注意argu末尾还带着右括号
-                trig = trig == 'sin'
-                trig_fun = Coefficient(trig, argu[:len(argu)-1])
+                trig_str, argu = coefficient.split('(') # 注意argu末尾还带着右括号
+                trig = trig_str[0] == 's' # 如果是sin则为真 反之为假
+                if len(trig_str) == 3: # 区分sin, sin2, sin3...
+                    trig_fun = Coefficient(trig, argu[:len(argu)-1])
+                else:
+                    trig_fun = Coefficient(trig, argu[:len(argu)-1], int(trig_str[-1]))
 
                 if trig_fun.argu == '90' and trig_fun.trig == True:
                     continue
@@ -59,14 +63,24 @@ class Vector():
         将Vector.coefficient_list转换为Vector.coefficient
         """
 
+        # 保证Vector.coefficient和Vector.coefficient_list必有一个为空
         if self.coefficient:
             print('\n数据报错\n')
             exit()
 
-        coefficients = list()
+        cos_sin = ['cos', 'sin']
+        coefficients = list() # 中间列表 存储字符串格式的每个三角函数
         for trig_fun in self.coefficient_list:
-            pass
+            if trig_fun.index == 1:
+                trig_str = f'{cos_sin[int(trig_fun.trig)]}({trig_fun.argu})'
+            else:
+                trig_str = f'{cos_sin[int(trig_fun.trig)]}{trig_fun.index}({trig_fun.argu})'
+            coefficients.append(trig_str)
+        
+        self.coefficient = ','.join(coefficients)
+        self.coefficient_list = list()
 
+        return None
 
 def _read_table(path: str) -> pd.DataFrame:
     """
