@@ -1,0 +1,16 @@
+vector,Ix,Iy,Iz,Sx,Sy,Sz,IzSz
+Ix,E,Iz,Iy-,E,E,E,IySz-
+Iy,Iz-,E,Ix,E,E,E,IxSz
+Iz,Iy,Ix-,E,E,E,E,E
+Sx,E,E,E,E,Sz,Sy-,IzSy-
+Sy,E,E,E,Sz-,E,Sx,IzSx
+Sz,E,E,E,Sy,Sx-,E,E
+IzSz,IySz,IxSz-,E,IzSy,IzSx-,E,E
+IxSz,E,IzSz,IySz-,IxSy,IxSx-,E,Iy-
+IySz,IzSz-,E,IxSz,IySy,IySx-,E,Ix
+IzSx,IySx,IxSx-,E,E,IzSz,IzSy-,Sy-
+IzSy,IySy,IxSy-,E,IzSz-,E,IzSx,Sx
+IxSx,E,IzSx,IySx-,E,IxSz,IxSy-,E
+IxSy,E,IzSy,IySy-,IxSz-,E,IxSx,E
+IySx,IzSx-,E,IxSx,E,IySz,IySy-,E
+IySy,IzSy-,E,IxSy,IySz,E,IySx,E
