@@ -4,6 +4,7 @@ class Coefficient():
     """
     系数类 包含三角函数类型和自变量
     三角函数为bool类型 0代表cos 1代表sin
+    参数: trig, argu, index
     """
 
     def __init__(self, trig: bool, argu: str, index = 1) -> None:
@@ -15,6 +16,7 @@ class Vector():
     """
     向量类 包含数值,符号,和系数
     符号为bool类型 0代表负 1代表正
+    参数: vector, symbol, coefficient, coefficient_list
     """
 
     def __init__(self, vector: str, symbol=True, coefficient = '', coefficient_list = list()) -> None:
@@ -23,8 +25,8 @@ class Vector():
         self.coefficient = coefficient
         self.coefficient_list = coefficient_list
 
-    # 待补充 增加相同Coefficient.trig, Coefficient.argu情况下Coefficient.index的合并
-    def str_to_list(self) -> None:
+    # 已补充 增加相同Coefficient.trig, Coefficient.argu情况下Coefficient.index的合并
+    def str_to_list(self):
         """
         将Vector.coefficient转换为Vector.coefficient_list
         """
@@ -36,30 +38,43 @@ class Vector():
 
         coefficients = self.coefficient.split(',')
 
-        trig_list = list() # 中间列表 存储Coefficient类的三角函数
-        for coefficient in coefficients:
+        trig_dict = dict() # 中间字典 存储Coefficient类的三角函数
+        for coefficient in coefficients: # coefficients是由字符串组成的列表
             if coefficient:
-                trig_str, argu = coefficient.split('(') # 注意argu末尾还带着右括号
-                trig = trig_str[0] == 's' # 如果是sin则为真 反之为假
-                if len(trig_str) == 3: # 区分sin, sin2, sin3...
-                    trig_fun = Coefficient(trig, argu[:len(argu)-1])
+                if coefficient[3] == '(': # 说明sin或cos不带幂指数
+                    key = coefficient
+                    value = 1
                 else:
-                    trig_fun = Coefficient(trig, argu[:len(argu)-1], int(trig_str[-1]))
+                    key = f'{coefficient[:3]}{coefficient[4:]}'
+                    value = int(coefficient[3])
+                
+                if key in trig_dict:
+                    trig_dict[key] += value
+                else:
+                    trig_dict[key] = 1
+        # 此时 trig_dict存储者Coefficient类所需的三个参数
 
-                if trig_fun.argu == '90' and trig_fun.trig == True:
-                    continue
-                if trig_fun.argu == '180' and trig_fun.trig == False:
+        trig_list = list()
+        for key, value in trig_dict.items():
+            trig_str, argu = key.split('(') # 注意argu末尾还带着右括号
+            trig = trig_str[0] == 's' # 如果是sin则为真 反之为假
+            class_trig = Coefficient(trig, argu[:len(argu)-1], value)
+
+            if class_trig.argu == '90' and class_trig.trig == True:
+                continue
+            if class_trig.argu == '180' and class_trig.trig == False:
+                if value % 2 != 0:
                     self.symbol = not self.symbol
-                    continue
+                continue
 
-                trig_list.append(trig_fun)
+            trig_list.append(class_trig)
         
         self.coefficient_list = trig_list
         self.coefficient = ''
 
-        return None
+        return self
     
-    def list_to_str(self) -> None:
+    def list_to_str(self):
         """
         将Vector.coefficient_list转换为Vector.coefficient
         """
@@ -81,7 +96,7 @@ class Vector():
         self.coefficient = ','.join(coefficients)
         self.coefficient_list = list()
 
-        return None
+        return self
 
 def read_table(path: str) -> pd.DataFrame:
     """
@@ -136,16 +151,26 @@ def vector_calculate(mm_vectors: list, operators: list, table: pd.DataFrame) -> 
     
     return mm_vectors
 
+# 待补充磁化矢量之间的互相简化
+# 1. sin2(x) + cos2(x) = 1
+# 2. 
 def simplify_results(mm_vectors: list) -> list:
     """
     输入宏观磁化矢量组 返回简化后的结果
     """
 
-    # 先拆分 简化 去除掉数值1的表达式
+    # 先简化各个单独的宏观磁化矢量 找出幂次大于等于2的项
     new_vectors = list()
     for mm_vector in mm_vectors:
-        new_vectors
+        mm_vector = Vector('') # 写代码用 写完注释掉
+        mm_vector.str_to_list()
+        for trig in mm_vector.coefficient_list:
+            if trig.index > 1:
+                pass
 
 if __name__ == '__main__':
 
     pass
+    test = Vector('Iy', True, ',sin(90),cos(2πδIt1),cos(πJt1),cos(180),cos(2πδIt2),cos(πJt2),cos(πJt1)')
+    test.str_to_list().list_to_str()
+    print(test.symbol, test.coefficient)
