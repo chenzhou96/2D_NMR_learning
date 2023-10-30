@@ -1,3 +1,4 @@
+from copy import deepcopy
 import pandas as pd
 
 class Coefficient():
@@ -12,6 +13,9 @@ class Coefficient():
         self.argu = argu
         self.index = index
 
+    def __eq__(self, __value: object) -> bool:
+        return self.trig == __value.trig and self.argu == __value.argu and self.index == __value.index
+
 class Vector():
     """
     向量类 包含数值,符号,和系数
@@ -19,11 +23,13 @@ class Vector():
     参数: vector, symbol, coefficient, coefficient_list
     """
 
-    def __init__(self, vector: str, symbol=True, coefficient = '', coefficient_list = list()) -> None:
-        self.vector = vector
+    def __init__(self, vector: str, symbol=True, coefficient = '', mul = 1) -> None:
+        self.vector = vector # Iy
         self.symbol = symbol
-        self.coefficient = coefficient
-        self.coefficient_list = coefficient_list
+        self.coefficient = coefficient # 所有三角函数形式的系数
+        self.coefficient_list = list()
+        self.exsit = True
+        self.mul = mul # 待补充
 
     # 已补充 增加相同Coefficient.trig, Coefficient.argu情况下Coefficient.index的合并
     def str_to_list(self):
@@ -51,7 +57,7 @@ class Vector():
                 if key in trig_dict:
                     trig_dict[key] += value
                 else:
-                    trig_dict[key] = 1
+                    trig_dict[key] = value
         # 此时 trig_dict存储者Coefficient类所需的三个参数
 
         trig_list = list()
@@ -87,16 +93,26 @@ class Vector():
         cos_sin = ['cos', 'sin']
         coefficients = list() # 中间列表 存储字符串格式的每个三角函数
         for trig_fun in self.coefficient_list:
-            if trig_fun.index == 1:
-                trig_str = f'{cos_sin[int(trig_fun.trig)]}({trig_fun.argu})'
-            else:
-                trig_str = f'{cos_sin[int(trig_fun.trig)]}{trig_fun.index}({trig_fun.argu})'
-            coefficients.append(trig_str)
+            if trig_fun.index:
+                if trig_fun.index == 1:
+                    trig_str = f'{cos_sin[int(trig_fun.trig)]}({trig_fun.argu})'
+                else:
+                    trig_str = f'{cos_sin[int(trig_fun.trig)]}{trig_fun.index}({trig_fun.argu})'
+                coefficients.append(trig_str)
         
         self.coefficient = ','.join(coefficients)
         self.coefficient_list = list()
 
         return self
+
+    def __eq__(self, __value: object) -> bool:
+        """
+        只判断vector和coefficient是否相等
+        """
+
+        self.str_to_list().list_to_str()
+        __value.str_to_list().list_to_str()
+        return self.vector == __value.vector and self.coefficient == __value.coefficient
 
 def read_table(path: str) -> pd.DataFrame:
     """
@@ -153,24 +169,63 @@ def vector_calculate(mm_vectors: list, operators: list, table: pd.DataFrame) -> 
 
 # 待补充磁化矢量之间的互相简化
 # 1. sin2(x) + cos2(x) = 1
-# 2. 
+# 2. -sin(x)Iy + sin(x)Iy = 0 
 def simplify_results(mm_vectors: list) -> list:
     """
     输入宏观磁化矢量组 返回简化后的结果
     """
 
-    # 先简化各个单独的宏观磁化矢量 找出幂次大于等于2的项
-    new_vectors = list()
     for mm_vector in mm_vectors:
-        mm_vector = Vector('') # 写代码用 写完注释掉
         mm_vector.str_to_list()
-        for trig in mm_vector.coefficient_list:
-            if trig.index > 1:
-                pass
+    
+    new_mm_vectors = deepcopy(mm_vectors)
+    # 简化 公式1
+    num = len(mm_vectors)
+    for index1 in range(num):
+        mm_vector1 = mm_vectors[index1]
+        if mm_vector1.exsit:
+            for index2 in range(index1 + 1, num):
+                mm_vector2 = mm_vectors[index2]
+                if mm_vector2.exsit and mm_vector1.vector == mm_vector2.vector and mm_vector1.symbol == mm_vector2.symbol:
+                    # 寻找可能满足公式1的矢量
+                    diff = list()
+                    for trig1 in mm_vector1.coefficient_list:
+                        if trig1 not in mm_vector2.coefficient_list:
+                            diff.append(trig1)
+                            if len(diff) > 1:
+                                break
+                    if len(diff) == 1:
+                        trig1 = diff[0]
+                        for trig2 in mm_vector2.coefficient_list:
+                            if trig2 not in mm_vector1.coefficient_list:
+                                break
+                        # 找到值得化简的一对矢量 差异系数在于trig1和trig2 已验证
+                        if trig1.argu == trig2.argu and trig1.index > 1 and trig2.index > 1 and trig1.trig != trig2.trig:
+                            trig1.index -= 2
+                            trig2.index -= 2
+                            mm_vector1.coefficient_list.remove(trig1)
+                            mm_vector2.coefficient_list.remove(trig2)
+                            if trig1.index:
+                                mm_vector1.coefficient_list.append(trig1)
+                            if trig2.index:
+                                mm_vector1.coefficient_list.append(trig2)
+                            if not trig1.index and not trig2.index:
+                                mm_vectors[index2].exsit = False
+    
+    # 简化 公式2
+
+    return mm_vectors
 
 if __name__ == '__main__':
 
     pass
-    test = Vector('Iy', True, ',sin(90),cos(2πδIt1),cos(πJt1),cos(180),cos(2πδIt2),cos(πJt2),cos(πJt1)')
-    test.str_to_list().list_to_str()
-    print(test.symbol, test.coefficient)
+    test = Vector('Iy', True, ',sin(90),cos2(2πδIt1),cos(πJt1),cos(180),cos(2πδIt2),cos(πJt2),cos(πJt1)')
+    # test.str_to_list().list_to_str()
+    test1 = Vector('Iy', True, ',sin(90),sin2(2πδIt1),cos(πJt1),cos(180),cos(2πδIt2),cos(πJt2),cos(πJt1)')
+    # test1.str_to_list().list_to_str()
+    mm_vectors = simplify_results([test, test1])
+    for mm_vector in mm_vectors:
+        if mm_vector.exsit:
+            mm_vector.list_to_str()
+            print(mm_vector.coefficient)
+    # print(test.symbol, test.coefficient)
