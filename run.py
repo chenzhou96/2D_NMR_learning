@@ -14,17 +14,17 @@ MM_VECTORS = [oo.Vector('Iz'),]
 OPERATORS = [
     oo.Vector('Ix', coefficient='90'),
     oo.Vector('Sx', coefficient='90'),
-    oo.Vector('Iz', coefficient='2πδIt1'),
-    oo.Vector('Sz', coefficient='2πδst1'),
-    oo.Vector('IzSz', coefficient='πJt1'),
+    oo.Vector('Iz', coefficient='πδIt1'),
+    oo.Vector('Sz', coefficient='πδst1'),
+    oo.Vector('IzSz', coefficient='[π/2]Jt1'),
     oo.Vector('Ix', coefficient='180'),
     oo.Vector('Sx', coefficient='180'),
-    oo.Vector('Iz', coefficient='2πδIt2'),
-    oo.Vector('Sz', coefficient='2πδst2'),
-    oo.Vector('IzSz', coefficient='πJt2'),
-    # Vector('Iz', coefficient='2πδIt2'),
-    # Vector('Sz', coefficient='2πδIt2'),
-    # Vector('IzSz', coefficient='πJt2'),
+    oo.Vector('Iz', coefficient='πδIt1'),
+    oo.Vector('Sz', coefficient='πδst1'),
+    oo.Vector('IzSz', coefficient='[π/2]Jt1'),
+    # oo.Vector('Iz', coefficient='2πδIt2'),
+    # oo.Vector('Sz', coefficient='2πδIt2'),
+    # oo.Vector('IzSz', coefficient='πJt2'),
 ]
 # 设置结束
 
@@ -38,14 +38,15 @@ if __name__ == '__main__':
 
     results = oo.vector_calculate(MM_VECTORS, OPERATORS, table)
     detected_vectors = list()
+    results = oo.simplify_results(results)
     for result in results:
         # if result.vector in WELL_BEHAVED_VECTORS:
         if True:
-            # result = _simplify_result(result)
+            # result = oo.simplify_results(result)
             if result.symbol:
-                detected_vectors.append(f'+{result.coefficient}{result.vector}')
+                detected_vectors.append(f'+{result.coefficient},{result.vector}')
             else:
-                detected_vectors.append(f'-{result.coefficient}{result.vector}')
+                detected_vectors.append(f'-{result.coefficient},{result.vector}')
 
     if detected_vectors:
         print('\n可检测磁化矢量:')

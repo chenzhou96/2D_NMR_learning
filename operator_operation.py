@@ -105,14 +105,14 @@ class Vector():
 
         return self
 
-    def __eq__(self, __value: object) -> bool:
-        """
-        只判断vector和coefficient是否相等
-        """
+    # def __eq__(self, __value: object) -> bool:
+    #     """
+    #     只判断vector和coefficient是否相等
+    #     """
 
-        self.str_to_list().list_to_str()
-        __value.str_to_list().list_to_str()
-        return self.vector == __value.vector and self.coefficient == __value.coefficient
+    #     self.str_to_list().list_to_str()
+    #     __value.str_to_list().list_to_str()
+    #     return self.vector == __value.vector and self.coefficient == __value.coefficient
 
 def read_table(path: str) -> pd.DataFrame:
     """
@@ -163,13 +163,15 @@ def vector_calculate(mm_vectors: list, operators: list, table: pd.DataFrame) -> 
         for mm_vector in mm_vectors:
             new_mm_vectors.extend(operator_calculate(mm_vector, operator, table))
 
-        mm_vectors = new_mm_vectors
+        mm_vectors = simplify_results(new_mm_vectors)
     
     return mm_vectors
 
 # 待补充磁化矢量之间的互相简化
-# 1. sin2(x) + cos2(x) = 1
-# 2. -sin(x)Iy + sin(x)Iy = 0 
+# 1. sin2(x) + cos2(x) = 1 已完成
+# 2. -sin(x)Iy + sin(x)Iy = 0 已完成
+# 3. cos2(x) - sin2(x) = cos(2x) 
+# 4. cos(x)sin(x) + sin(x)cos(x) = 2sin(x)cos(x)
 def simplify_results(mm_vectors: list) -> list:
     """
     输入宏观磁化矢量组 返回简化后的结果
@@ -178,41 +180,66 @@ def simplify_results(mm_vectors: list) -> list:
     for mm_vector in mm_vectors:
         mm_vector.str_to_list()
     
-    new_mm_vectors = deepcopy(mm_vectors)
-    # 简化 公式1
-    num = len(mm_vectors)
-    for index1 in range(num):
-        mm_vector1 = mm_vectors[index1]
-        if mm_vector1.exsit:
-            for index2 in range(index1 + 1, num):
-                mm_vector2 = mm_vectors[index2]
-                if mm_vector2.exsit and mm_vector1.vector == mm_vector2.vector and mm_vector1.symbol == mm_vector2.symbol:
-                    # 寻找可能满足公式1的矢量
-                    diff = list()
-                    for trig1 in mm_vector1.coefficient_list:
-                        if trig1 not in mm_vector2.coefficient_list:
-                            diff.append(trig1)
-                            if len(diff) > 1:
+    flag = True # 标记是否化简到最简形式
+    while flag:
+        flag = False
+        num = len(mm_vectors)
+        # 简化 公式1
+        for index1 in range(num):
+            mm_vector1 = mm_vectors[index1]
+            if mm_vector1.exsit:
+                for index2 in range(index1 + 1, num):
+                    mm_vector2 = mm_vectors[index2]
+                    if mm_vector2.exsit and mm_vector1.vector == mm_vector2.vector and mm_vector1.symbol == mm_vector2.symbol:
+                        # 寻找可能满足公式1的矢量
+                        diff = list()
+                        for trig1 in mm_vector1.coefficient_list:
+                            if trig1 not in mm_vector2.coefficient_list:
+                                diff.append(trig1)
+                                if len(diff) > 1:
+                                    break
+                        if len(diff) == 1:
+                            trig1 = diff[0]
+                            for trig2 in mm_vector2.coefficient_list:
+                                if trig2 not in mm_vector1.coefficient_list:
+                                    break
+                            # 找到值得化简的一对矢量 差异系数在于trig1和trig2 已验证
+                            if trig1.argu == trig2.argu and trig1.index > 1 and trig2.index > 1 and trig1.trig != trig2.trig:
+                                trig1.index -= 2
+                                trig2.index -= 2
+                                mm_vector1.coefficient_list.remove(trig1)
+                                mm_vector2.coefficient_list.remove(trig2)
+                                if trig1.index:
+                                    mm_vector1.coefficient_list.append(trig1)
+                                if trig2.index:
+                                    mm_vector1.coefficient_list.append(trig2)
+                                if not trig1.index and not trig2.index:
+                                    mm_vectors[index2].exsit = False
+        
+        # 简化 公式2
+        for index1 in range(num):
+            mm_vector1 = mm_vectors[index1]
+            if mm_vector1.exsit:
+                for index2 in range(index1 + 1, num):
+                    mm_vector2 = mm_vectors[index2]
+                    if mm_vector2.exsit and mm_vector1.vector == mm_vector2.vector and mm_vector1.symbol != mm_vector2.symbol:
+                        # 寻找可能满足公式2的矢量
+                        same_or_not = True
+                        for trig in mm_vector1.coefficient_list:
+                            if trig not in mm_vector2.coefficient_list:
+                                same_or_not = False
                                 break
-                    if len(diff) == 1:
-                        trig1 = diff[0]
-                        for trig2 in mm_vector2.coefficient_list:
-                            if trig2 not in mm_vector1.coefficient_list:
-                                break
-                        # 找到值得化简的一对矢量 差异系数在于trig1和trig2 已验证
-                        if trig1.argu == trig2.argu and trig1.index > 1 and trig2.index > 1 and trig1.trig != trig2.trig:
-                            trig1.index -= 2
-                            trig2.index -= 2
-                            mm_vector1.coefficient_list.remove(trig1)
-                            mm_vector2.coefficient_list.remove(trig2)
-                            if trig1.index:
-                                mm_vector1.coefficient_list.append(trig1)
-                            if trig2.index:
-                                mm_vector1.coefficient_list.append(trig2)
-                            if not trig1.index and not trig2.index:
-                                mm_vectors[index2].exsit = False
-    
-    # 简化 公式2
+                        if same_or_not:
+                            mm_vectors[index1].exsit = False
+                            mm_vectors[index2].exsit = False
+        
+        for mm_vector in mm_vectors[:]:
+            if not mm_vector.exsit:
+                mm_vectors.remove(mm_vector)
+                flag = True
+
+    for mm_vector in mm_vectors:
+        mm_vector.list_to_str()
 
     return mm_vectors
 
@@ -223,7 +250,9 @@ if __name__ == '__main__':
     # test.str_to_list().list_to_str()
     test1 = Vector('Iy', True, ',sin(90),sin2(2πδIt1),cos(πJt1),cos(180),cos(2πδIt2),cos(πJt2),cos(πJt1)')
     # test1.str_to_list().list_to_str()
-    mm_vectors = simplify_results([test, test1])
+    test2 = Vector('Iy', True, ',sin(90),cos(πJt1),cos(2πδIt2),cos(πJt2),cos(πJt1)')
+    test3 = Vector('Iy', True, ',sin(90),sin2(2πδIt1),cos(πJt1),cos(180),cos(2πδIt2),cos(πJt2),cos(πJt1)')
+    mm_vectors = simplify_results([test, test1, test2, test3])
     for mm_vector in mm_vectors:
         if mm_vector.exsit:
             mm_vector.list_to_str()
