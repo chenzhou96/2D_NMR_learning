@@ -13,7 +13,7 @@ class Coefficient():
         self.argu = argu
         self.index = index
 
-    def __eq__(self, __value: object) -> bool:
+    def __eq__(self, __value: object) -> bool: # 用于判断该类是否在列表中
         return self.trig == __value.trig and self.argu == __value.argu and self.index == __value.index
 
 class Vector():
@@ -104,15 +104,6 @@ class Vector():
         self.coefficient_list = list()
 
         return self
-
-    # def __eq__(self, __value: object) -> bool:
-    #     """
-    #     只判断vector和coefficient是否相等
-    #     """
-
-    #     self.str_to_list().list_to_str()
-    #     __value.str_to_list().list_to_str()
-    #     return self.vector == __value.vector and self.coefficient == __value.coefficient
 
 def read_table(path: str) -> pd.DataFrame:
     """

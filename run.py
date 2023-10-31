@@ -40,8 +40,8 @@ if __name__ == '__main__':
     detected_vectors = list()
     results = oo.simplify_results(results)
     for result in results:
-        # if result.vector in WELL_BEHAVED_VECTORS:
-        if True:
+        if result.vector in WELL_BEHAVED_VECTORS:
+        # if True:
             # result = oo.simplify_results(result)
             if result.symbol:
                 detected_vectors.append(f'+{result.coefficient},{result.vector}')
