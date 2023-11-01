@@ -39,7 +39,7 @@ class Vector():
 
         # 保证Vector.coefficient和Vector.coefficient_list必有一个为空
         if self.coefficient_list:
-            print('\n数据报错\n')
+            print('\n数据报错\nfrom str_to_list\n')
             exit()
 
         coefficients = self.coefficient.split(',')
@@ -87,7 +87,7 @@ class Vector():
 
         # 保证Vector.coefficient和Vector.coefficient_list必有一个为空
         if self.coefficient:
-            print('\n数据报错\n')
+            print('\n数据报错\nfrom list_to_str\n')
             exit()
 
         cos_sin = ['cos', 'sin']
@@ -160,8 +160,8 @@ def vector_calculate(mm_vectors: list, operators: list, table: pd.DataFrame) -> 
 
 # 待补充磁化矢量之间的互相简化
 # 1. sin2(x) + cos2(x) = 1 已完成
-# 2. -sin(x)Iy + sin(x)Iy = 0 已完成
-# 3. cos2(x) - sin2(x) = cos(2x) 
+# 2. -sin(x) + sin(x) = 0 已完成
+# 3. cos2(x) - sin2(x) = cos(2x) 已完成
 # 4. cos(x)sin(x) + sin(x)cos(x) = sin(2x)
 def simplify_results(mm_vectors: list) -> list:
     """
@@ -174,14 +174,15 @@ def simplify_results(mm_vectors: list) -> list:
     flag = True # 标记是否化简到最简形式
     while flag:
         flag = False
+        new_vectors = list() # 临时存储产生的新矢量
         num = len(mm_vectors)
-        # 简化 公式1
+        # 简化 公式1 & 3
         for index1 in range(num):
             mm_vector1 = mm_vectors[index1]
             if mm_vector1.exsit:
                 for index2 in range(index1 + 1, num):
                     mm_vector2 = mm_vectors[index2]
-                    if mm_vector2.exsit and mm_vector1.vector == mm_vector2.vector and mm_vector1.symbol == mm_vector2.symbol:
+                    if mm_vector2.exsit and mm_vector1.vector == mm_vector2.vector:
                         # 寻找可能满足公式1的矢量
                         diff = list()
                         for trig1 in mm_vector1.coefficient_list:
@@ -190,7 +191,7 @@ def simplify_results(mm_vectors: list) -> list:
                                 if len(diff) > 1:
                                     break
                         if len(diff) == 1:
-                            trig1 = diff[0]
+                            trig1= diff[0]
                             for trig2 in mm_vector2.coefficient_list:
                                 if trig2 not in mm_vector1.coefficient_list:
                                     break
@@ -198,14 +199,30 @@ def simplify_results(mm_vectors: list) -> list:
                             if trig1.argu == trig2.argu and trig1.index > 1 and trig2.index > 1 and trig1.trig != trig2.trig:
                                 trig1.index -= 2
                                 trig2.index -= 2
-                                mm_vector1.coefficient_list.remove(trig1)
-                                mm_vector2.coefficient_list.remove(trig2)
-                                if trig1.index:
-                                    mm_vector1.coefficient_list.append(trig1)
-                                if trig2.index:
-                                    mm_vector1.coefficient_list.append(trig2)
-                                if not trig1.index and not trig2.index:
-                                    mm_vectors[index2].exsit = False
+                                if mm_vector1.symbol == mm_vector2.symbol: # 公式1
+                                    if not trig1.index:
+                                        mm_vector1.coefficient_list.remove(trig1)
+                                    if not trig2.index:
+                                        mm_vector2.coefficient_list.remove(trig2)
+                                    if not trig1.index and not trig2.index:
+                                        mm_vectors[index2].exsit = False
+                                else: # 公式3
+                                    new_coefficient = deepcopy(mm_vector1.coefficient_list)
+                                    new_coefficient.remove(trig1)
+                                    new_coefficient.append(Coefficient(False, f'2{trig1.argu}'))
+                                    if not trig1.trig:
+                                        new_vector = deepcopy(mm_vector1)
+                                    else:
+                                        new_vector = deepcopy(mm_vector2)
+                                    new_vector.coefficient_list = new_coefficient
+                                    new_vectors.append(new_vector)
+                                    if not trig1.index:
+                                        mm_vectors[index1].exsit = False
+                                    if not trig2.index:
+                                        mm_vectors[index2].exsit = False
+
+        if new_vectors:
+            mm_vectors.extend(new_vectors)
         
         # 简化 公式2
         for index1 in range(num):
@@ -246,6 +263,6 @@ if __name__ == '__main__':
     mm_vectors = simplify_results([test, test1, test2, test3])
     for mm_vector in mm_vectors:
         if mm_vector.exsit:
-            mm_vector.list_to_str()
             print(mm_vector.coefficient)
     # print(test.symbol, test.coefficient)
+    # output: sin2(2πδIt1),cos2(πJt1),cos(2πδIt2),cos(πJt2)
