@@ -2,7 +2,7 @@ import operator_operation as oo
 
 # 参数设置
 ## 路径
-PATH = '/Users/zhouchen/Documents/CS_project/2D_NMR_learning/operator_operation_table.csv'
+PATH = 'operator_operation_table.csv'
 ## 定义可检测的宏观磁化矢量
 WELL_BEHAVED_VECTORS = {'Ix', 'Iy', 'Sx', 'Sy'}
 ## 定义起始宏观磁化矢量 一般为 Iz
@@ -22,9 +22,9 @@ OPERATORS = [
     oo.Vector('Iz', coefficient='πδIt1'),
     oo.Vector('Sz', coefficient='πδst1'),
     oo.Vector('IzSz', coefficient='[π/2]Jt1'),
-    # oo.Vector('Iz', coefficient='2πδIt2'),
-    # oo.Vector('Sz', coefficient='2πδIt2'),
-    # oo.Vector('IzSz', coefficient='πJt2'),
+    oo.Vector('Iz', coefficient='2πδIt2'),
+    oo.Vector('Sz', coefficient='2πδIt2'),
+    oo.Vector('IzSz', coefficient='πJt2'),
 ]
 # 设置结束
 

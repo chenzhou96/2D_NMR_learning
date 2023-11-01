@@ -162,7 +162,7 @@ def vector_calculate(mm_vectors: list, operators: list, table: pd.DataFrame) -> 
 # 1. sin2(x) + cos2(x) = 1 已完成
 # 2. -sin(x)Iy + sin(x)Iy = 0 已完成
 # 3. cos2(x) - sin2(x) = cos(2x) 
-# 4. cos(x)sin(x) + sin(x)cos(x) = 2sin(x)cos(x)
+# 4. cos(x)sin(x) + sin(x)cos(x) = sin(2x)
 def simplify_results(mm_vectors: list) -> list:
     """
     输入宏观磁化矢量组 返回简化后的结果

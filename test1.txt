@@ -1,0 +1,20 @@
+input:
+    oo.Vector('Ix', coefficient='90'),
+    oo.Vector('Sx', coefficient='90'),
+    oo.Vector('Iz', coefficient='πδIt1'),
+    oo.Vector('Sz', coefficient='πδst1'),
+    oo.Vector('IzSz', coefficient='[π/2]Jt1'),
+    oo.Vector('Ix', coefficient='180'),
+    oo.Vector('Sx', coefficient='180'),
+    oo.Vector('Iz', coefficient='πδIt1'),
+    oo.Vector('Sz', coefficient='πδst1'),
+    oo.Vector('IzSz', coefficient='[π/2]Jt1'),
+    oo.Vector('Iz', coefficient='2πδIt2'),
+    oo.Vector('Sz', coefficient='2πδIt2'),
+    oo.Vector('IzSz', coefficient='πJt2'),
+
+output:
+    -cos(πJt1),cos(2πδIt2),cos(πJt2),Iy
+    -cos(πJt1),sin(2πδIt2),cos(πJt2),Ix
+    sin(πJt1),cos(2πδIt2),sin(πJt2),Iy
+    sin(πJt1),sin(2πδIt2),sin(πJt2),Ix
