@@ -58,7 +58,7 @@ output:
     -cos(2[π/2]Jt1),cos(2πδIt2),cos(πJt2),Iy
     -cos(2[π/2]Jt1),sin(2πδIt2),cos(πJt2),Ix
 output:
-    -cos(2[π/2]Jt1),cos(2πδIt2),cos(πJt2),Iy
     +sin(2[π/2]Jt1),cos(2πδIt2),sin(πJt2),Iy
     +sin(2[π/2]Jt1),sin(2πδIt2),sin(πJt2),Ix
+    -cos(2[π/2]Jt1),cos(2πδIt2),cos(πJt2),Iy
     -cos(2[π/2]Jt1),sin(2πδIt2),cos(πJt2),Ix

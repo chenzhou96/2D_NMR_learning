@@ -155,6 +155,7 @@ def vector_calculate(mm_vectors: list, operators: list, table: pd.DataFrame) -> 
             new_mm_vectors.extend(operator_calculate(mm_vector, operator, table))
 
         mm_vectors = simplify_results(new_mm_vectors)
+        # mm_vectors = new_mm_vectors
     
     return mm_vectors
 
@@ -224,22 +225,33 @@ def simplify_results(mm_vectors: list) -> list:
         if new_vectors:
             mm_vectors.extend(new_vectors)
         
-        # 简化 公式2
+        # 简化 公式2 & 4
         for index1 in range(num):
             mm_vector1 = mm_vectors[index1]
             if mm_vector1.exsit:
                 for index2 in range(index1 + 1, num):
                     mm_vector2 = mm_vectors[index2]
-                    if mm_vector2.exsit and mm_vector1.vector == mm_vector2.vector and mm_vector1.symbol != mm_vector2.symbol:
-                        # 寻找可能满足公式2的矢量
+                    if mm_vector2.exsit and mm_vector1.vector == mm_vector2.vector:
+                        # 寻找可能满足公式2&4的矢量
                         same_or_not = True
                         for trig in mm_vector1.coefficient_list:
                             if trig not in mm_vector2.coefficient_list:
                                 same_or_not = False
                                 break
                         if same_or_not:
-                            mm_vectors[index1].exsit = False
-                            mm_vectors[index2].exsit = False
+                            if mm_vector1.symbol != mm_vector2.symbol: # 公式2
+                                mm_vectors[index1].exsit = False
+                                mm_vectors[index2].exsit = False
+                            else: # 公式4
+                                for trig in mm_vector1.coefficient_list:
+                                    trig0 = trig
+                                    trig0.trig = not trig.trig
+                                    if trig0 in mm_vector1.coefficient_list:
+                                        mm_vector1.coefficient_list.remove(trig)
+                                        mm_vector1.coefficient_list.remove(trig0)
+                                        mm_vector1.coefficient_list.append(Coefficient(True, f'2{trig.argu}', trig.index))
+                                        mm_vectors[index2].exsit = False
+                                        break
         
         for mm_vector in mm_vectors[:]:
             if not mm_vector.exsit:

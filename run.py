@@ -38,11 +38,10 @@ if __name__ == '__main__':
 
     results = oo.vector_calculate(MM_VECTORS, OPERATORS, table)
     detected_vectors = list()
-    results = oo.simplify_results(results)
+    # results = oo.simplify_results(results)
     for result in results:
         if result.vector in WELL_BEHAVED_VECTORS:
         # if True:
-            # result = oo.simplify_results(result)
             if result.symbol:
                 detected_vectors.append(f'+{result.coefficient},{result.vector}')
             else:
