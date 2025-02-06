@@ -1,1 +1,6 @@
 __pycache__
+*.pyc
+*.swp
+.DS_Store
+.idea/
+.vscode/

@@ -1,64 +1,48 @@
-input:
-    oo.Vector('Ix', coefficient='90'),
-    oo.Vector('Sx', coefficient='90'),
-    oo.Vector('Iz', coefficient='2πδIt1'),
-    oo.Vector('Sz', coefficient='2πδst1'),
-    oo.Vector('IzSz', coefficient='πJt1'),
-    oo.Vector('Ix', coefficient='90'),
-    oo.Vector('Sx', coefficient='90'),
-    oo.Vector('Iz', coefficient='2πδIt2'),
-    oo.Vector('Sz', coefficient='2πδst2'),
-    oo.Vector('IzSz', coefficient='πJt2'),
-output:
-    +sin(2πδIt1),cos(πJt1),cos(2πδIt2),cos(πJt2),Ix
-    -sin(2πδIt1),cos(πJt1),sin(2πδIt2),cos(πJt2),Iy
-    +sin(2πδIt1),sin(πJt1),cos(2πδst2),sin(πJt2),Sx
-    -sin(2πδIt1),sin(πJt1),sin(2πδst2),sin(πJt2),Sy
+    input:
+        oo.Vector('Ix', coefficient='90'),
+        oo.Vector('Sx', coefficient='90'),
+        oo.Vector('Iz', coefficient='2πδIt1'),
+        oo.Vector('Sz', coefficient='2πδst1'),
+        oo.Vector('IzSz', coefficient='πJt1'),
+        oo.Vector('Ix', coefficient='90'),
+        oo.Vector('Sx', coefficient='90'),
+        oo.Vector('Iz', coefficient='2πδIt2'),
+        oo.Vector('Sz', coefficient='2πδst2'),
+        oo.Vector('IzSz', coefficient='πJt2'),
+    output:
+        +sin(2πδIt1),cos(πJt1),cos(2πδIt2),cos(πJt2),Ix
+        -sin(2πδIt1),cos(πJt1),sin(2πδIt2),cos(πJt2),Iy
+        +sin(2πδIt1),sin(πJt1),cos(2πδst2),sin(πJt2),Sx
+        -sin(2πδIt1),sin(πJt1),sin(2πδst2),sin(πJt2),Sy
 
-input:
-    oo.Vector('Ix', coefficient='90'),
-    oo.Vector('Iz', coefficient='πδIt1'),
-    oo.Vector('Ix', coefficient='180'),
-    oo.Vector('Iz', coefficient='πδIt1'),
-    oo.Vector('Sz', coefficient='πδst1'),
-    oo.Vector('IzSz', coefficient='[π/2]Jt1'),
-    oo.Vector('Iz', coefficient='2πδIt2'),
-output:
-    -cos([π/2]Jt1),cos(2πδIt2),Iy
-    -cos([π/2]Jt1),sin(2πδIt2),Ix
+    input:
+        oo.Vector('Ix', coefficient='90'),
+        oo.Vector('Iz', coefficient='πδIt1'),
+        oo.Vector('Ix', coefficient='180'),
+        oo.Vector('Iz', coefficient='πδIt1'),
+        oo.Vector('Sz', coefficient='πδst1'),
+        oo.Vector('IzSz', coefficient='[π/2]Jt1'),
+        oo.Vector('Iz', coefficient='2πδIt2'),
+    output:
+        -cos([π/2]Jt1),cos(2πδIt2),Iy
+        -cos([π/2]Jt1),sin(2πδIt2),Ix
 
-input:
-    oo.Vector('Ix', coefficient='90'),
-    oo.Vector('Sx', coefficient='90'),
-    oo.Vector('Iz', coefficient='πδIt1'),
-    oo.Vector('Sz', coefficient='πδst1'),
-    oo.Vector('IzSz', coefficient='[π/2]Jt1'),
-    oo.Vector('Ix', coefficient='180'),
-    oo.Vector('Sx', coefficient='180'),
-    oo.Vector('Iz', coefficient='πδIt1'),
-    oo.Vector('Sz', coefficient='πδst1'),
-    oo.Vector('IzSz', coefficient='[π/2]Jt1'),
-    oo.Vector('Iz', coefficient='2πδIt2'),
-    oo.Vector('Sz', coefficient='2πδIt2'),
-    oo.Vector('IzSz', coefficient='πJt2'),
-output:
-    -cos2([π/2]Jt1),cos(2πδIt2),cos(πJt2),Iy
-    -cos2([π/2]Jt1),sin(2πδIt2),cos(πJt2),Ix
-    +cos([π/2]Jt1),sin([π/2]Jt1),cos(2πδIt2),sin(πJt2),Iy
-    +cos([π/2]Jt1),sin([π/2]Jt1),sin(2πδIt2),sin(πJt2),Ix
-    +sin([π/2]Jt1),cos([π/2]Jt1),cos(2πδIt2),sin(πJt2),Iy
-    +sin([π/2]Jt1),cos([π/2]Jt1),sin(2πδIt2),sin(πJt2),Ix
-    +sin2([π/2]Jt1),cos(2πδIt2),cos(πJt2),Iy
-    +sin2([π/2]Jt1),sin(2πδIt2),cos(πJt2),Ix
-output:
-    +cos([π/2]Jt1),sin([π/2]Jt1),cos(2πδIt2),sin(πJt2),Iy
-    +cos([π/2]Jt1),sin([π/2]Jt1),sin(2πδIt2),sin(πJt2),Ix
-    +sin([π/2]Jt1),cos([π/2]Jt1),cos(2πδIt2),sin(πJt2),Iy
-    +sin([π/2]Jt1),cos([π/2]Jt1),sin(2πδIt2),sin(πJt2),Ix
-    -cos(2[π/2]Jt1),cos(2πδIt2),cos(πJt2),Iy
-    -cos(2[π/2]Jt1),sin(2πδIt2),cos(πJt2),Ix
-output:
-    +sin(2[π/2]Jt1),cos(2πδIt2),sin(πJt2),Iy
-    +sin(2[π/2]Jt1),sin(2πδIt2),sin(πJt2),Ix
-    -cos(2[π/2]Jt1),cos(2πδIt2),cos(πJt2),Iy
-    -cos(2[π/2]Jt1),sin(2πδIt2),cos(πJt2),Ix
+    input:
+        oo.Vector('Ix', coefficient='90'),
+        oo.Vector('Sx', coefficient='90'),
+        oo.Vector('Iz', coefficient='πδIt1'),
+        oo.Vector('Sz', coefficient='πδst1'),
+        oo.Vector('IzSz', coefficient='[π/2]Jt1'),
+        oo.Vector('Ix', coefficient='180'),
+        oo.Vector('Sx', coefficient='180'),
+        oo.Vector('Iz', coefficient='πδIt1'),
+        oo.Vector('Sz', coefficient='πδst1'),
+        oo.Vector('IzSz', coefficient='[π/2]Jt1'),
+        oo.Vector('Iz', coefficient='2πδIt2'),
+        oo.Vector('Sz', coefficient='2πδIt2'),
+        oo.Vector('IzSz', coefficient='πJt2'),
+    output:
+        +sin(2[π/2]Jt1),cos(2πδIt2),sin(πJt2),Iy
+        +sin(2[π/2]Jt1),sin(2πδIt2),sin(πJt2),Ix
+        -cos(2[π/2]Jt1),cos(2πδIt2),cos(πJt2),Iy
+        -cos(2[π/2]Jt1),sin(2πδIt2),cos(πJt2),Ix
